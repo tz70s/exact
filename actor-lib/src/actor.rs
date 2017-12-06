@@ -1,4 +1,6 @@
-//! The actor interfaces
+///! The actor interfaces.
+
+use ::ActorSystem;
 
 /// The default actor trait for implementation.
 pub trait Actor {
@@ -7,10 +9,11 @@ pub trait Actor {
     /// Instead of direct using it.
 
     /// Asynchronous sending, also, fire and forget.
-    // TODO: The default sending method for actor
     // TODO: May makes this to be macro as dsl.
     // Parameters will accpet an actor reference.
-    fn send(&self) {}
+    fn send(&self, actor_system: &ActorSystem, target: String, msg: String) {
+        actor_system.route_to(target, msg);
+    }
 
     /// The recv function accept a serializable message.
     /// It can throws out error if there exists.
@@ -20,6 +23,5 @@ pub trait Actor {
     // TODO: Become and unbecome
     // Implementation tips and plan:
     // The actor instance will keep track the invocation methods.
-    fn bec(&self);
-
+    // fn bec(&self);
 }
