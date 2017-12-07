@@ -1,51 +1,60 @@
 //! The sample implemntation of actor
+#[macro_use]
 extern crate edge_actor;
 
 use edge_actor::ActorSystem;
-use edge_actor::Actor;
+use edge_actor::Behavior;
+use edge_actor::actor::Send;
+use edge_actor::actor::ActorContext;
+use std::io;
 
 /// The entry point is needed, with following type signature.
 #[no_mangle]
-pub extern fn init<'a>() -> ActorSystem<'a> {
+pub extern fn init() -> ActorSystem {
     // Create an actor system
     let mut actor_system = ActorSystem::new("sample-actor-system");
 
-    // Pass the reference functions to construct actor.
-    actor_system.create_actor("counter-actor-0", SampleActor::new);
-    actor_system.create_actor("counter-actor-1", SampleActor::new);
+    actor_system.create_virt_actor(ActorContext {
+        actor_type: "step machine".to_owned(),
+        behavior: Box::new(StepInit {}),
+        states: InternalStates {count: 0}
+    });
 
     // Transfer the ownership out, and pass this to runtime to control.
     actor_system
 }
 
-/// Define the sample actor, which store a count.
-struct SampleActor {
+struct InternalStates {
     count: i32
 }
 
-/// Can implement any functions, one strict limitation is,
-/// the construction is currently only support for type signature Fn() -> T.
-/// That is, there's no passing argument, currently.
-impl SampleActor {
-    fn new() -> Self {
-        SampleActor {
-            count: 0
-        }
+struct StepInit {}
+
+/// Define behavior of actor, this is the first step
+impl Behavior for StepInit {
+
+    type States = InternalStates;
+
+    fn recv(&mut self, msg: &str, states: &mut InternalStates) -> Result<Send<InternalStates>, io::Error> {
+        println!("The receive msg is : {}", msg);
+        states.count += 2;
+        println!("The default count will plus 2 => {}", states.count);
+        Ok(send!( become_ => StepTwo {}))
     }
 }
 
-/// Should implement the Actor trait for dynamic dispatching in runtime.
-/// The core implementation is here.
-impl Actor for SampleActor {
+struct StepTwo {}
 
-    /// The implementation of recv function.
-    // TODO: Will find a better way to set become (state machine).
-    // TODO: Send! function is still investigated.
-    fn recv(&mut self, msg: &str) -> Result<(), &'static str> {
-        // You can access the receive message and the internal states which defined.
-        println!("The recv msg is : {} and the current count is : {}", msg, self.count);
-        self.count += 1;
-        // Remember to pass the result back
-        Ok(())
+impl Behavior for StepTwo {
+
+    type States = InternalStates;
+
+    fn recv(&mut self, msg: &str, states: &mut InternalStates) -> Result<Send<InternalStates>, io::Error> {
+        println!("The receive msg is : {}", msg);
+        states.count += 1;
+        println!("The step two count will plus only 1 => {}", states.count);
+        Ok(send!( become_ => StepInit {}))
     }
 }
+
+

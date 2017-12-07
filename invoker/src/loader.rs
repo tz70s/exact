@@ -1,9 +1,9 @@
 //! Internal implementation of wrapping dynamic lib loading.
 //! The target loading library is the implementation from user's application logics.
 
-use ::libloading;
-use ::hello;
-use ::edge_actor::ActorSystem;
+use libloading;
+use edge_actor::ActorSystem;
+use std::io;
 
 /// The record entity of implementation from user, also, a meta information of dynamic lib.
 pub struct LibraryFrame<'a> {
@@ -11,12 +11,10 @@ pub struct LibraryFrame<'a> {
     dyn_lib: libloading::Library,
 }
 
-pub type Error = ::std::io::Error;
-
 impl<'a> LibraryFrame<'a> {
 
     /// Create a new actor lib frame.
-    pub fn new(lib_name: &'a str) -> Result<Self, Error> {
+    pub fn new(lib_name: &'a str) -> Result<Self, io::Error> {
         let dyn_lib = libloading::Library::new(lib_name)?;
         let actor_frame = LibraryFrame {
             lib_name,
@@ -25,9 +23,9 @@ impl<'a> LibraryFrame<'a> {
         Ok(actor_frame)
     }
 
-    pub fn get_actor_system(&self) -> Result<ActorSystem, Error> {
+    pub fn get_actor_system(&self) -> Result<ActorSystem, io::Error> {
         unsafe {
-            let init_func: libloading::Symbol<unsafe extern fn() -> ActorSystem<'a>> =
+            let init_func: libloading::Symbol<unsafe extern fn() -> ActorSystem> =
                 self.dyn_lib.get(b"init")?;
             Ok(init_func())
         }
