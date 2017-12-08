@@ -1,9 +1,0 @@
-[package]
-name = "invoker"
-version = "0.1.0"
-authors = ["tz70s <su3g4284zo6y7@gmail.com>"]
-
-[dependencies]
-libloading = "0.4"
-edge-actor = { path = "../actor-lib", version = "0.1.0"}
-hello = { path = "../../hello", version = "0.1.0" }

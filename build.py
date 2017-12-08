@@ -5,17 +5,15 @@ import os
 import subprocess
 
 def build_sample():
-    os.chdir(os.curdir + '/sample')
-    subprocess.call(['cargo', 'build', '--release'])
-    subprocess.call(['cp', './target/release/libsample.dylib', '../invoker'])
+    subprocess.call(['cp', './target/debug/libsample.dylib', './platform/cache'])
 
-def build_invoker():
-    os.chdir(os.curdir + '/invoker')
+def build_platform():
+    os.chdir(os.curdir + '/platform')
     subprocess.call(['cargo', 'run'])
 
-def build_lib():
-    os.chdir(os.curdir + '/actor-lib')
-    subprocess.call(['cargo', 'build'])
+def clean():
+    os.chdir(os.curdir + '/platform/cache')
+    subprocess.call(['rm', 'libsample.dylib'])
 
 def parse_args():
     if len(argv) != 2:
@@ -23,17 +21,17 @@ def parse_args():
         exit(1)
 
     if argv[1] == 'sample':
-        print "Build sample and gen lib to invoker"
+        print "Gen lib to platform"
         build_sample()
 
-    if argv[1] == 'invoker':
-        print "Build invoker"
-        build_invoker()
-
-    if argv[1] == 'lib':
-        print "Build lib"
-        build_lib()
-
+    if argv[1] == 'platform':
+        print "Run platform"
+        build_platform()
+    
+    if argv[1] == 'clean':
+        print 'Clean up gen lib in platform folder'
+        clean()
+    
     else:
         exit(1)
     

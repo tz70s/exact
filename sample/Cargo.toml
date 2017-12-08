@@ -6,4 +6,4 @@ authors = ["tz70s <su3g4284zo6y7@gmail.com>"]
 [lib]
 crate-type = ["dylib"]
 [dependencies]
-edge-actor = { path = "../actor-lib", version = "0.1.0" }
+edge-actor = { path = "../actor", version = "0.1.0" }

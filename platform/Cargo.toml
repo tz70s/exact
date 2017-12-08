@@ -1,0 +1,12 @@
+[package]
+name = "platform"
+version = "0.1.0"
+authors = ["tz70s <su3g4284zo6y7@gmail.com>"]
+
+[dependencies]
+libloading = "0.4"
+tokio-core = "0.1"
+tokio-io = "0.1"
+futures = "0.1"
+futures-cpupool = "0.1"
+edge-actor = { path = "../actor", version = "0.1.0"}

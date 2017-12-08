@@ -1,2 +1,3 @@
-# edge-actor-rs
-Virtual actor platform in edge/fog computing environment, written in rust for high performance and safety.
+Experiment for virtual actor with dynamic library linking.
+
+**DEAD** though.
